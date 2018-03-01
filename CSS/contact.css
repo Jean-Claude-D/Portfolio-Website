@@ -1,0 +1,32 @@
+* {
+	/*border: 1px solid black;*/
+}
+
+#archUp {
+	text-align: center;
+}
+
+#archDown {
+	width: 100%;
+}
+
+#archDown > a {
+	display: block;
+	float: left;
+	
+	text-align: center;
+	
+	width: 50%;
+}
+
+#content > img {
+	display: block;
+	
+	margin-left: auto;
+	margin-right: auto;
+}
+
+#content {
+	text-align: center;
+	padding-top: 10%;
+}
