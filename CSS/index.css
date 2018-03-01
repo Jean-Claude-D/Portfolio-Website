@@ -1,0 +1,128 @@
+* {
+	margin: 0px;
+	padding: 0px;
+	box-sizing: border-box;
+	
+	font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+	font-size: 30px;
+	font-style: normal;
+	font-variant: normal;
+	font-weight: 500;
+}
+
+html, body, #wrap {
+	width: 100%;
+	height: 100%;
+}
+
+/* Main Navigation Bar -- Begin */
+#mainNav {
+	line-height: 26.4px;
+	
+	float: left;
+	
+	height: 100%;
+	width: 30%;
+}
+
+#mainNav table {
+	float: left;
+	
+	height: 100%;
+	width: 99%;
+	
+}
+
+/* Links -- Begin */
+#mainNav table tr td a:link {
+	margin-left: 35px;
+	text-decoration: none;
+	border-left: 10px solid white;
+}
+
+#mainNav table tr td a:visited {
+	margin-left: 35px;
+	text-decoration: none;
+	border-left: 10px solid white;
+}
+
+#mainNav table tr td a:hover {
+	margin-left: 35px;
+	text-decoration: none;
+	border-left: 10px solid black;
+}
+
+#mainNav table tr td a:active {
+	margin-left: 35px;
+	text-decoration: none;
+	border-left: 10px solid grey;
+}
+/* Links -- End */
+
+#NavRightBorder {
+	float: left;
+	
+	border-right: 1px solid black;
+	
+	width: 1%;
+	height: 95%;
+	
+	position: relative;
+	top: 50%;
+	transform: translateY(-50%);
+}
+
+/* Main Navigation Bar -- End */
+
+/* Main Content -- Begin */
+#content {
+	float: left;
+	
+	height: 100%;
+	width: 70%;
+}
+
+#content img {
+	display: block;
+	
+	margin-bottom: 15px;
+	margin-top: 15px;
+	
+	margin-left: auto;
+	margin-right: auto;
+}
+
+/* Header -- Begin */
+#content header {
+	font-family: "Lucida Console", Monaco, monospace;
+	font-size: 150px;
+	
+	margin-bottom: 40px;
+	margin-top: 40px;
+	
+	text-align: center;
+}
+
+#headerBottomBorder {
+	margin-left: auto;
+	margin-right: auto;
+	
+	border-bottom: 2px solid black;
+	
+	width: 70%;
+	height: 1%;
+}
+/* Header -- End */
+
+#content p {
+	line-height: 26.4px;
+	
+	margin-bottom: 15px;
+	margin-top: 15px;
+	
+	margin-left: auto;
+	margin-right: auto;
+	
+	text-align: center;
+}
+/* Main Content -- End */
