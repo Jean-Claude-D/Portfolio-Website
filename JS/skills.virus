@@ -1,0 +1,87 @@
+document.addEventListener("DOMContentLoaded", function() {
+	var scrollStatus = {};
+	scrollStatus.toBeScrolled;
+
+	scrollStatus.mainFocus;
+
+	scrollStatus.upMini;
+	scrollStatus.testMiniLow;
+	scrollStatus.lowMini;
+
+	scrollStatus.ready;
+
+	scrollStatus.check = function(e) {
+		if(scrollStatus.ready && e.deltaY != 0) {
+			scrollStatus.previousDir = scrollStatus.goingUp;
+			scrollStatus.goingUp = e.deltaY > 0;
+			if(scrollStatus.previousDir !== scrollStatus.goingUp) {
+				scrollStatus.move();
+			}
+			else {
+				if(scrollStatus.counter++ >= scrollStatus.threshold) {
+					scrollStatus.counter = 0;
+					scrollStatus.move();
+				}
+			}
+		}
+	};
+
+	scrollStatus.threshold = 2;
+	scrollStatus.counter = 0;
+	scrollStatus.goingUp = false;
+	scrollStatus.previousDir = false;
+
+	scrollStatus.move = function() {
+		if(scrollStatus.goingUp) {
+			var firstOfUpMini = scrollStatus.upMini.firstElementChild;
+			var firstOfMainFocus = scrollStatus.mainFocus.firstElementChild;
+			var firstOfLowMini = scrollStatus.lowMini.firstElementChild;
+			
+			scrollStatus.upMini.appendChild(firstOfMainFocus);
+			
+			scrollStatus.mainFocus.appendChild(firstOfLowMini);
+			
+			scrollStatus.lowMini.appendChild(firstOfUpMini);
+		}
+		else {
+			var lastOfUpMini = scrollStatus.upMini.lastElementChild;
+			var lastOfMainFocus = scrollStatus.mainFocus.lastElementChild;
+			var lastOfLowMini = scrollStatus.lowMini.lastElementChild;
+			
+			scrollStatus.lowMini.insertBefore
+			(lastOfMainFocus, scrollStatus.lowMini.firstElementChild);
+			
+			scrollStatus.upMini.insertBefore
+			(lastOfLowMini, scrollStatus.upMini.firstElementChild);
+			
+			scrollStatus.mainFocus.insertBefore
+			(lastOfUpMini, scrollStatus.mainFocus.firstElementChild);
+		}
+	};
+
+	scrollStatus.toBeScrolled = document.getElementById("content");
+	scrollStatus.mainFocus = document.getElementById("mainFocus");
+	scrollStatus.upMini = document.getElementById("upperMiniatures");
+	scrollStatus.lowMini = document.getElementById("lowerMiniatures");
+	scrollStatus.testMiniLow = scrollStatus.lowMini.firstElementChild;
+	
+	/* Detect if the actual element scrolled is toBeScrolled */
+	scrollStatus.ready = false;
+	scrollStatus.toBeScrolled.addEventListener("mouseover", function(e) {
+		scrollStatus.ready = true;
+	});
+	scrollStatus.toBeScrolled.addEventListener("mouseout", function(e) {
+		scrollStatus.ready = false;
+	});
+	
+	addEventListener("wheel", function(e) {
+		scrollStatus.check(e);
+	});
+	
+	document.addEventListener("keydown", function(e) {
+		if(e.altKey && e.shiftKey && (e.key === 't' || e.key === 'T') &&
+		typeof(Storage) !== "undefined") {
+			window.location = "toDo.html";
+		}
+	});
+});

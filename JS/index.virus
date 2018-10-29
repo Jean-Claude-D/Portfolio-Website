@@ -1,0 +1,35 @@
+document.addEventListener("DOMContentLoaded", function() {
+	var typeWritten = document.getElementById("typeWriter");
+	var cur = document.getElementById("cursor");
+	var typeWriterText = "Hello World";
+	var i = 0;
+	
+	var typeWriterEffect = setInterval(function() {
+		if(i < typeWriterText.length) {
+			typeWritten.innerHTML += typeWriterText.charAt(i++);
+		}
+		else {
+			clearInterval(typeWriterEffect);
+		}
+		
+	}, 130);
+	
+	var hidden = false;
+	var blink = setInterval(function() {
+		if(hidden) {
+			cur.style.color = "#01395e";
+		}
+		else {
+			cur.style.color = "white";
+		}
+		
+		hidden = !hidden;
+	}, 650);
+	
+	document.addEventListener("keydown", function(e) {
+		if(e.altKey && e.shiftKey && (e.key === 't' || e.key === 'T') &&
+		typeof(Storage) !== "undefined") {
+			window.location = "HTML/toDo.html";
+		}
+	});
+});

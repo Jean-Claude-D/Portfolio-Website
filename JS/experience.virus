@@ -1,0 +1,49 @@
+document.addEventListener("DOMContentLoaded", function() {
+	/* collections Begin */
+	collections = {};
+
+	collections.which = function(element, collection, condition) {
+		for(var i = 0; i < collection.length; i++) {
+			if(condition(element, collection[i])) {
+				return i;
+			}
+		}
+		
+		return -1;
+	};
+	/* collections End */
+	
+	/* infoPanes Begin */
+	infoPanes = {};
+	infoPanes.collapsed = "none";
+	infoPanes.expanded = "block";
+
+	infoPanes.toggle = function(specificPlus) {
+		var para = specificPlus.parentElement.lastElementChild;
+		if(para.style.display == infoPanes.collapsed) {
+			para.style.display = infoPanes.expanded;
+		}
+		else {
+			para.style.display = infoPanes.collapsed;
+		}
+	};
+	/* infoPanes Begin */
+	
+	var mainPane = document.getElementById("content");
+	var allPluses = document.getElementsByClassName("plus");
+	
+	mainPane.addEventListener("click", function(e) {
+		if(collections.which(e.target, allPluses, function(e1, e2) {
+			return e1 === e2;
+		}) > -1) {
+			infoPanes.toggle(e.target);
+		}
+	});
+	
+	document.addEventListener("keydown", function(e) {
+		if(e.altKey && e.shiftKey && (e.key === 't' || e.key === 'T') &&
+		typeof(Storage) !== "undefined") {
+			window.location = "toDo.html";
+		}
+	});
+});

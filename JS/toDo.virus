@@ -1,0 +1,180 @@
+var debugMode = false;
+
+document.addEventListener("DOMContentLoaded", function(e) {
+	if(debugMode) {
+		alert("JS runs!");
+	}
+	
+	var wrap = document.getElementById("wrap");
+	var list = document.getElementById("list");
+	
+	/* Lib -- Begin */
+	var lib = {};
+	lib.replaceLast = function(fullStr, oldStr, newStr) {
+		var index = fullStr.lastIndexOf(oldStr);
+		
+		var toReturn = fullStr.slice(0, index) + newStr;
+		
+		return toReturn;
+	};
+	/* Lib -- End */
+	
+	/* Input -- Begin */
+	var input = {};
+	input.field = document.getElementById("inputTaskName");
+	input.isValid = function() {
+		var regex = /^\W*$/;
+		if(debugMode) {
+			console.log("Testing input with : " + regex + '\n' +
+			"Input is valid : " + !regex.test(input.field.value) + '\n' +
+			"Actual input : " + input.field.value);
+		}
+		return !regex.test(input.field.value);
+	};
+	/* Input -- End */
+	
+	/* ID -- Begin */
+	var ID = {};
+	ID.generate = function() {
+		var newID = -1;
+		var unique;
+		
+		do {
+			unique = true;
+			newID++;
+			for(var i = 0; (i < localStorage.length) && (unique); i++) {
+				if(newID == localStorage.key(i)) {
+					unique = false;
+				}
+			}
+		}while(!unique);
+		
+		return newID;
+	};
+	/* ID -- End */
+	
+	/* Item -- Begin */
+	var item = {};
+	item.isCompleted = function(key) {
+		var text = item.getDescription(key);
+		return text.substring(text.lastIndexOf(",") + 1) === "line-through";
+	};
+	item.getDescription = function(key) {
+		return localStorage.getItem(key);
+	};
+	item.addIntoList = function(key) {
+		var associatedText = item.getDescription(key);
+		
+		var task = document.createElement("section");
+		task.setAttribute("class", "task");
+		
+		/* add the span */
+		var spanKey = document.createElement("span");
+		spanKey.setAttribute("class", "key");
+		spanKey.innerText = key;
+		task.appendChild(spanKey);
+		
+		/* add the description */
+		var description = document.createElement("p");
+		description.setAttribute("class", "description");
+		description.innerText = associatedText.substring(0, associatedText.lastIndexOf(","));
+		if(item.isCompleted(key)) {
+			description.style.textDecoration = "line-through";
+		}
+		task.appendChild(description);
+		
+		/* add the complete button */
+		var complete = document.createElement("input");
+		complete.type = "button";
+		complete.setAttribute("class", "completeBtn");
+		if(item.isCompleted(key)) {
+			complete.value = "UnComplete";
+		}
+		else {
+			complete.value = "Complete";
+		}
+		task.appendChild(complete);
+		
+		/* add the delete button */
+		var del = document.createElement("input");
+		del.type = "button";
+		del.setAttribute("class", "deleteBtn");
+		del.value = "Delete";
+		task.appendChild(del);
+		
+		/* add itself to the list */
+		list.appendChild(task);
+	};
+	item.create = function(description) {
+		var newGeneratedID = ID.generate();
+		
+		localStorage.setItem(newGeneratedID, description + ",none");
+		
+		item.reloadAll();
+	};
+	item.reloadAll = function() {
+		list.innerHTML = "";
+		
+		if(debugMode) {
+			console.log(ID.all);
+			console.log(localStorage);
+		}
+		
+		for(var i = 0; i < localStorage.length; i++) {
+			if(debugMode) {
+				console.log("loading : " + localStorage.key(i));
+			}
+			item.addIntoList(localStorage.key(i));
+		}
+	};
+	item.toggle = function(key) {
+		var oldDescription = item.getDescription(key);
+		
+		if(item.isCompleted(key)) {
+			oldDescription = lib.replaceLast(oldDescription, ",line-through", ",none");
+		}
+		else {
+			oldDescription = lib.replaceLast(oldDescription, ",none", ",line-through");
+		}
+		
+		localStorage.setItem(key, oldDescription);
+		
+		item.reloadAll();
+	};
+	item.remove = function(key) {
+		localStorage.removeItem(key);
+		
+		item.reloadAll();
+	};
+	/* Item -- End */
+	
+	item.reloadAll();
+	input.field.value = "";
+	
+	document.addEventListener("keydown", function(e) {
+		if(e.altKey && e.shiftKey && (e.key === 't' || e.key === 'T')) {
+			window.history.back();
+		}
+		else if(input.field === document.activeElement && e.key === "Enter"
+		&& input.isValid()) {
+			item.create(input.field.value);
+			input.field.value = "";
+		}
+	});
+	
+	document.addEventListener("click", function(e) {
+		if(debugMode) {
+			console.log("Registered a click!");
+		}
+		
+		if(e.target.id === "addBtn" && input.isValid()) {
+			item.create(input.field.value);
+		}
+		else if(e.target.className === "completeBtn") {
+			item.toggle(e.target.parentElement.firstElementChild.innerHTML);
+		}
+		else if(e.target.className === "deleteBtn") {
+			item.remove(e.target.parentElement.firstElementChild.innerHTML);
+		}
+	});
+});

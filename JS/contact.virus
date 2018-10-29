@@ -1,0 +1,76 @@
+var debugMode = false;
+
+document.addEventListener("DOMContentLoaded", function() {
+	if(debugMode) {
+		alert("JS runs!");
+	}
+	animate = {};
+	animate.timeCounter = 0;
+	animate.clock = setInterval(function() {
+		animate.timeCounter++;
+	}, 200);
+	animate.yFunc = function(x) {
+		return Math.sin(x);
+	};
+	animate.opacityFunc = function(x) {
+		return Math.sin(x) / 10;
+	};
+	animate.createFloating = function(element, shadow) {
+		var initialElementY = (parseFloat(
+		window.getComputedStyle(element)
+		.getPropertyValue("top")) / parseFloat(
+		window.getComputedStyle(element.parentElement)
+		.getPropertyValue("height"))) * 100;
+		
+		var initialShadowOpacity = parseFloat(
+		window.getComputedStyle(shadow)
+		.getPropertyValue("opacity"));
+		
+		return setInterval(function() {
+			element.style.top = (initialElementY + animate.yFunc(animate.timeCounter)) + "%";
+			
+			shadow.style.opacity = initialShadowOpacity + animate.opacityFunc(animate.timeCounter);
+		}, 1);
+	};
+	animate.animations = [];
+	
+	var shadows = document.getElementsByClassName("shadow");
+	
+	var gitLab = document.getElementById("gitLab");
+	animate.animations[animate.animations.lenght] = animate.createFloating(gitLab, shadows[0]);
+	
+	var twitter = document.getElementById("twitter");
+	animate.animations[animate.animations.lenght] = animate.createFloating(twitter, shadows[1]);
+	
+	var mail = document.getElementById("mail");
+	animate.animations[animate.animations.lenght] = animate.createFloating(mail, shadows[2]);
+	
+	var content = document.getElementById("content");
+	
+	document.addEventListener("mouseover", function(e) {
+		if(e.target === gitLab.firstElementChild) {
+			content.style.backgroundColor = "#e65328";
+		}
+		else if(e.target === twitter.firstElementChild) {
+			content.style.backgroundColor = "#1da1f2";
+		}
+		else if(e.target === mail.firstElementChild) {
+			content.style.backgroundColor = "#ffdead";
+		}
+	});
+	
+	document.addEventListener("mouseout", function(e) {
+		if(e.target === gitLab.firstElementChild ||
+		e.target === twitter.firstElementChild ||
+		e.target === mail.firstElementChild) {
+			content.style.backgroundColor = "#ffffff";
+		}
+	});
+	
+	document.addEventListener("keydown", function(e) {
+		if(e.altKey && e.shiftKey && (e.key === 't' || e.key === 'T') &&
+		typeof(Storage) !== "undefined") {
+			window.location = "toDo.html";
+		}
+	});
+});

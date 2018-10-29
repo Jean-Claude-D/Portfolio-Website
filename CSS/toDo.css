@@ -1,0 +1,78 @@
+* {
+	margin: 0px;
+	padding: 0px;
+	box-sizing:border-box;
+}
+
+html, body {
+	height: 100%;
+	width: 100%;
+}
+
+/* Page -- Begin */
+#wrap {
+	height: 90%;
+	width: 95%;
+	
+	margin: 0px auto;
+	
+	position: relative;
+	top: 5%;
+	
+	border: solid black 1px;
+}
+
+#list, #ui{
+	height: 100%;
+	
+	width: 50%;
+	float: left;
+}
+
+/* UserInput -- Begin */
+#userInputModule {
+	position: relative;
+	top: 50%;
+	
+	text-align: center;
+}
+/* UserInput -- End */
+
+/* List -- Begin */
+#list {
+	overflow-x: auto;
+	overflow-y: scroll;
+	
+	border: solid black 1px;
+}
+
+.task {
+	width: 97%;
+	height: 75px;
+	min-height: 100px;
+	overflow: auto;
+	
+	margin: 15px auto;
+	
+	display: block;
+	border: solid black 1px;
+}
+
+.key {
+	display: none;
+	float: left;
+}
+
+.description {
+	height: 100%;
+	width: 70%;
+	
+	float: left;
+}
+
+.completeBtn, .deleteBtn {
+	width: 15%;
+	float: left;
+}
+/* List -- End */
+/* Page -- End */

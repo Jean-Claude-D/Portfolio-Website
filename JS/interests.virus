@@ -1,0 +1,227 @@
+var debugMode = false;
+
+addEventListener("DOMContentLoaded", function() {
+	/* collections Begin */
+	collections = {};
+
+	collections.which = function(element, collection, condition) {
+		for(var i = 0; i < collection.length; i++) {
+			if(condition(element, collection[i])) {
+				return i;
+			}
+		}
+		
+		return -1;
+	};
+	/* collections End */
+	
+	/* circleData Begin */
+	circleData = {};
+	circleData.sizeWithValues = function (x, y, radius) {
+		this.X = x;
+		this.Y = y;
+		this.Width = radius;
+		this.Height = radius;
+	};
+	circleData.sizeWithElement = function (circle) {
+		this.X = parseFloat(
+		window.getComputedStyle(circle)
+		.getPropertyValue("left"));
+		this.Y = parseFloat(
+		window.getComputedStyle(circle)
+		.getPropertyValue("top"));
+		this.Width = parseFloat(
+		window.getComputedStyle(circle)
+		.getPropertyValue("width"));
+		this.Height = parseFloat(
+		window.getComputedStyle(circle)
+		.getPropertyValue("height"));
+	};
+	/* A circle's position and size to fill the window */
+	circleData.target = new
+	circleData.sizeWithValues(177, 10, 750);
+	/* Keep data about the currently animated circle */
+	circleData.now;
+	/* circleData End */
+	
+	/* animate Begin */
+	animate = {};
+	animate.time = 200;
+	animate.smooth = 10;
+	animate.iterNum = animate.time / animate.smooth;
+	
+	animate.scale = function (circle, targetSize, endFunc) {
+		var currX = parseFloat
+		(window.getComputedStyle(circle).getPropertyValue("left"));
+		var currY = parseFloat
+		(window.getComputedStyle(circle).getPropertyValue("top"));
+		var currWidth = parseFloat
+		(window.getComputedStyle(circle).getPropertyValue("width"));
+		var currHeight = parseFloat
+		(window.getComputedStyle(circle).getPropertyValue("height"));
+		
+		var diffX = Math.round((targetSize.X - currX) / animate.iterNum);
+		var diffY = Math.round((targetSize.Y - currY) / animate.iterNum);
+		var diffWidth = Math.round((targetSize.Width - currWidth) / animate.iterNum);
+		var diffHeight = Math.round((targetSize.Height - currHeight) / animate.iterNum);
+		
+		var count = 0;
+		
+		if(debugMode) {
+			console.log('\n' + "Setting up the animation" + '\n' +
+			"diffX : " + diffX + ", diffY : " + diffY + '\n' +
+			"diffWidth : " + diffWidth + ", diffHeight : " + diffHeight + '\n');
+		}
+		animate.stopAnimation();
+		animate.animation = setInterval(function () {
+			if(count++ >= animate.iterNum) {
+				if(endFunc) {
+					endFunc(circle, targetSize);
+				}
+				circle.style.top = targetSize.Y + "px";
+				circle.style.left = targetSize.X + "px";
+				circle.style.width = targetSize.Width + "px";
+				circle.style.height = targetSize.Height + "px";
+				animate.stopAnimation();
+			}
+			else {
+				circle.style.left = currX + "px";
+				circle.style.top = currY + "px";
+				circle.style.height = currHeight + "px";
+				circle.style.width = currWidth + "px";
+				
+				currX += diffX;
+				currY += diffY;
+				currWidth += diffWidth;
+				currHeight += diffHeight;
+			}
+		}, animate.smooth);
+		animate.animationRunning = true;
+	};
+	animate.animation;
+	animate.animationRunning = false;
+	animate.stopAnimation = function(checkRunningFirst = true) {
+		if(checkRunningFirst && !animate.animationRunning) {
+			return;
+		}
+		
+		clearInterval(animate.animation);
+		animate.animationRunning = false;
+	};
+	/* animate End */
+	
+	toggle = {};
+	toggle.focusedCircle;
+	toggle.allCircles;
+	
+	toggle.WasOrIsFullSize = false;
+	toggle.toggleCircle = function(num, endFunc) {
+		if(debugMode) {
+			console.log('\n' + "Circle was or is at full size : " + toggle.WasOrIsFullSize + '\n');
+		}
+		
+		/* clicking on another circle or on background*/
+		if(toggle.focusedCircle !== num) {
+			/* focusedCircle is small */
+			if(!toggle.WasOrIsFullSize && !animate.animationRunning) {
+				toggle.focusedCircle = num;
+				if(num >= 0) {
+					toggle.toggleCircle(num, null);
+				}
+			}
+		else {
+				/* Avoid user making a mess */
+				toggle.isEventDisabled = true;
+				toggle.toggleCircle(toggle.focusedCircle, function() {
+					toggle.isEventDisabled = false;
+					toggle.focusedCircle = num;
+				});
+			}
+		}
+		else if (num >= 0){
+			if(!toggle.WasOrIsFullSize && !animate.animationRunning) {
+				if(debugMode) {
+					alert("You clicked on a small circle");
+				}
+				circleData.now = new circleData.sizeWithElement(toggle.allCircles[num]);
+				circleData.now.style = toggle.allCircles[num].style;
+				
+				toggle.allCircles[num].style.zIndex = 10;
+				animate.scale(toggle.allCircles[num], circleData.target, function() {
+					toggle.WasOrIsFullSize = true;
+					toggle.focusedCircle = num;
+					
+					toggle.allCircles[num].children[0].style.width =
+					toggle.allCircles[num].children[0].style.height = "150px";
+					
+					toggle.allCircles[num].children[1].style.display = "block";
+					if(endFunc) {
+						endFunc();
+					}
+				});
+			}
+			else if(toggle.WasOrIsFullSize && !animate.animationRunning){
+				if(debugMode) {
+					alert("You clicked on a full circle");
+				}
+				
+				toggle.allCircles[num].children[0].style.width =
+				toggle.allCircles[num].children[0].style.height = "50%";
+						
+				toggle.allCircles[num].children[1].style.display = "none";
+					
+				animate.scale(toggle.allCircles[num], circleData.now, function(elem) {
+					elem.style.zIndex = 1;
+					toggle.WasOrIsFullSize = false;
+					if(endFunc) {
+						endFunc();
+					}
+				});
+			}
+		}
+	};
+	toggle.isEventDisabled = false;
+	
+	var content = document.getElementById("content");
+	toggle.allCircles = document.getElementsByClassName("circle");
+	
+	content.addEventListener("click", function(e) {
+		if(debugMode) {
+			var circleNumDebug = collections.which(e.target, toggle.allCircles, function(element, collectionItem) {
+				return (collectionItem == element) || (collectionItem.contains(element));
+			});
+			
+			console.log(circleNumDebug);
+		}
+		
+		if(!toggle.isEventDisabled) {
+			var circleNum = collections.which(e.target, toggle.allCircles, function(element, collectionItem) {
+				return (collectionItem == element) || (collectionItem.contains(element));
+			});
+			
+			if(debugMode) {
+				var currCircleData = new circleData.sizeWithElement(toggle.allCircles[circleNum]);
+				console.log('\n' + "Circle number : " + circleNum + '\n' +
+				toggle.allCircles[circleNum] + '\n' +
+				"X : " + currCircleData.X + " ,Y : " + currCircleData.Y +
+				" ,Z : " + currCircleData.ZIndex + '\n' +
+				" ,Height : " + currCircleData.Height + " ,Width : " + currCircleData.Width);
+			}
+			
+			toggle.toggleCircle(circleNum);
+		}
+	});
+	
+	document.addEventListener("keydown", function(e) {
+		if(e.altKey && e.shiftKey && (e.key === 't' || e.key === 'T') &&
+		typeof(Storage) !== "undefined") {
+			window.location = "toDo.html";
+		}
+	});
+	
+	if(debugMode) {
+			setInterval(function() {
+				console.log('\n' + "Event is Disabled : " + toggle.isEventDisabled + '\n');
+			}, 500);
+	}
+});
